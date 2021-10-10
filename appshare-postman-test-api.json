@@ -1,0 +1,2881 @@
+{
+	"info": {
+		"_postman_id": "b490c340-34f8-4826-bd40-3895d5d246af",
+		"name": "Appshare API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Accounts - Valid Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"idToken\": {",
+							"            \"type\": \"string\"",
+							"        },    ",
+							"    },",
+							"    \"required\": [\"idToken\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"idToken\", response.idToken);",
+							" ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/accounts/id-tokens",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"accounts",
+						"id-tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Accounts - Invalid E-Mail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message is not equal 'EMAIL_NOT_FOUND'.\", function () {",
+							"    pm.expect(response.error.message).to.not.equal(\"EMAIL_NOT_FOUND\");",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/accounts/id-tokens",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"accounts",
+						"id-tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Accounts - Invalid Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{$randomPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/accounts/id-tokens",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"accounts",
+						"id-tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Valid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"accountId\": {",
+							"            \"type\": \"integer\"",
+							"        },   ",
+							"    },",
+							"    \"required\": [\"id\", \"accountId\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"userId\", response.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Apps - Valid Token & Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Array length is above 0.\", function () {",
+							"    pm.expect(response.length).to.be.above(0);",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\": \"array\",",
+							"    \"minItems\": 1,",
+							"    \"items\": {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"id\": {",
+							"                \"type\": \"integer\"",
+							"            },",
+							"            \"name\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"             \"bundleIdentifier\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"            \"iconUrl\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"            \"userId\":  {",
+							"                \"type\": \"integer\"",
+							"            },  ",
+							"        },",
+							"        \"required\": [\"id\", \"name\", \"bundleIdentifier\", \"iconUrl\", \"userId\"]",
+							"    },",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Apps - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Apps - Invalid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Beta Codes - Valid Token & Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"isRedeemed\": {",
+							"            \"type\": \"boolean\"",
+							"        },",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"        \"code\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"    },",
+							"    \"required\": [\"isRedeemed\", \"id\", \"code\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"code\", response.code);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{apiKey}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/beta-codes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"beta-codes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Beta Codes - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/beta-codes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"beta-codes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Beta Codes - Invalid Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{apiKey}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": {{$randomInt}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/beta-codes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"beta-codes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Beta Codes - Valid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"code\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"isRedeemed\": {",
+							"            \"type\": \"boolean\"",
+							"        },  ",
+							"    },",
+							"    \"required\": [\"id\", \"code\", \"isRedeemed\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/beta-codes/:code",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"beta-codes",
+						":code"
+					],
+					"variable": [
+						{
+							"key": "code",
+							"value": "{{code}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Beta Codes - Invalid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/beta-codes/:code",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"beta-codes",
+						":code"
+					],
+					"variable": [
+						{
+							"key": "code",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Array length is above 0.\", function () {",
+							"    pm.expect(response.length).to.be.above(0);",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\": \"array\",",
+							"    \"minItems\": 1,",
+							"    \"items\": {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"id\": {",
+							"                \"type\": \"integer\"",
+							"            },",
+							"            \"name\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"            \"systemVersion\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"            \"previewImageUrl\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"            \"screenWidth\": {",
+							"                \"type\": \"integer\"",
+							"            },  ",
+							"            \"screenHeight\": {",
+							"                \"type\": \"integer\"",
+							"            },  ",
+							"            \"blueprintId\": {",
+							"                \"type\": \"string\"",
+							"            },  ",
+							"        },",
+							"        \"required\": [\"id\", \"name\", \"systemVersion\", \"previewImageUrl\", \"screenWidth\", \"screenHeight\", \"blueprintId\"]",
+							"    },",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"deviceId\", response[response.length - 1].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/devices",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Valid Token, Path, Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Array length is above 0.\", function () {",
+							"    pm.expect(response.builds.length).to.be.above(0);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"name\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleIdentifier\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"iconUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"userId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"builds\": {",
+							"            \"type\": \"array\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"name\", \"bundleIdentifier\", \"iconUrl\", \"userId\", \"builds\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"appId\", response.id);",
+							"pm.collectionVariables.set(\"buildId\", response.builds[response.builds.length - 1].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "app",
+							"type": "file",
+							"src": "Appshare.zip"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "app",
+							"type": "file",
+							"src": "Appshare.zip",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Invalid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "app",
+							"type": "file",
+							"src": "Appshare.zip",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Invalid Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "app",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/:userId/apps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						":userId",
+						"apps"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Valid Token & Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"name\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleIdentifier\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"iconUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"userId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"builds\": {",
+							"            \"type\": \"array\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"name\", \"bundleIdentifier\", \"iconUrl\", \"userId\", \"builds\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/apps/:appId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"apps",
+						":appId"
+					],
+					"variable": [
+						{
+							"key": "appId",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/apps/:appId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"apps",
+						":appId"
+					],
+					"variable": [
+						{
+							"key": "appId",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apps - Invalid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/apps/:appId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"apps",
+						":appId"
+					],
+					"variable": [
+						{
+							"key": "appId",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Builds - Valid Token & Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"appId\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"        \"version\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"buildNumber\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleIdentifier\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"fileName\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleName\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"iv\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"authTag\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"appId\", \"version\", \"buildNumber\", \"bundleIdentifier\", \"fileName\", \"bundleUrl\", \"bundleName\", \"iv\", \"authTag\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{apiKey}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/builds/:buildId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"builds",
+						":buildId"
+					],
+					"variable": [
+						{
+							"key": "buildId",
+							"value": "{{buildId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Builds - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/builds/:buildId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"builds",
+						":buildId"
+					],
+					"variable": [
+						{
+							"key": "buildId",
+							"value": "{{buildId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Builds - Invalid Path",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{apiKey}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/builds/:buildId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"builds",
+						":buildId"
+					],
+					"variable": [
+						{
+							"key": "buildId",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Valid Token, Params, Data - With Pasword",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"token\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"tokenId\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"shareUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"expiresAt\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"hasPassword\": {",
+							"            \"type\": \"boolean\"",
+							"        }, ",
+							"        \"password\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"token\", \"tokenId\", \"shareUrl\", \"expiresAt\", \"hasPassword\", \"password\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"shareLinkToken\", response.token);",
+							"pm.collectionVariables.set(\"shareLinkPassword\", requestBody.password);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"30d\",\n  \"hasPassword\": true,\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps/:appId/share-links",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps",
+						":appId",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"{{$randomDateFuture}}\",\n  \"hasPassword\": true,\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId​",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid User ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"{{$randomDateFuture}}\",\n  \"hasPassword\": true,\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "invalid"
+						},
+						{
+							"key": "appId​",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid App ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"{{$randomDateFuture}}\",\n  \"hasPassword\": true,\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId​",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid Data (expiresAt)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": {{$randomInt}},\n  \"hasPassword\": true,\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId​",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid Data (hasPassword)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"{{$randomDateFuture}}\",\n  \"hasPassword\": \"{{$randomWord}}\",\n  \"password\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId​",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid Data (password)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404.\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"{{$randomDateFuture}}\",\n  \"hasPassword\": true,\n  \"password\": {{$randomInt}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}​/users/:userId​/apps​/:appId​/share-links",
+					"host": [
+						"{{baseUrl}}​"
+					],
+					"path": [
+						"users",
+						":userId​",
+						"apps​",
+						":appId​",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId​",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId​",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Valid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"token\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"tokenId\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"shareUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"expiresAt\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"hasPassword\": {",
+							"            \"type\": \"boolean\"",
+							"        }, ",
+							"        \"password\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"token\", \"tokenId\", \"shareUrl\", \"expiresAt\", \"hasPassword\", \"password\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{shareLinkToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/share-links",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"share-links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/share-links",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"share-links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Accesses - Valid Token - With Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"appAccess\": {",
+							"            \"type\": \"object\",",
+							"            \"properties\": {",
+							"                \"id\": {",
+							"                    \"type\": \"integer\"",
+							"                }",
+							"            }",
+							"        },",
+							"        \"token\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"appAccess\", \"token\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"appAccessToken\", response.token);",
+							"pm.collectionVariables.set(\"appAccessId\", response.appAccess.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\": \"{{shareLinkToken}}\",\n  \"password\": \"{{shareLinkPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/app-accesses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app-accesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Links - Valid Token, Params, Data - Without Pasword",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"token\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"tokenId\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"shareUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"expiresAt\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"hasPassword\": {",
+							"            \"type\": \"boolean\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"token\", \"tokenId\", \"shareUrl\", \"expiresAt\", \"hasPassword\",]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"shareLinkToken\", response.token);",
+							"pm.collectionVariables.set(\"shareLinkPassword\", requestBody.password);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"expiresAt\": \"1d\",\n  \"hasPassword\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/apps/:appId/share-links",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"apps",
+						":appId",
+						"share-links"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						},
+						{
+							"key": "appId",
+							"value": "{{appId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Accesses - Valid Token - With Password Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"appAccess\": {",
+							"            \"type\": \"object\",",
+							"            \"properties\": {",
+							"                \"id\": {",
+							"                    \"type\": \"integer\"",
+							"                }",
+							"            }",
+							"        },",
+							"        \"token\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"appAccess\", \"token\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"appAccessToken\", response.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\": \"{{shareLinkToken}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/app-accesses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app-accesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Accesses - Valid Token & Param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200.\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"name\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"bundleIdentifier\": {",
+							"            \"type\": \"string\"",
+							"        },  ",
+							"        \"iconUrl\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"userId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"builds\": {",
+							"            \"type\": \"array\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"name\", \"bundleIdentifier\", \"iconUrl\", \"userId\", \"builds\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{appAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/app-accesses/:appAccessId/share-link/app",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app-accesses",
+						":appAccessId",
+						"share-link",
+						"app"
+					],
+					"variable": [
+						{
+							"key": "appAccessId",
+							"value": "{{appAccessId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Accesses - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/app-accesses/:appAccessId/share-link/app",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app-accesses",
+						":appAccessId",
+						"share-link",
+						"app"
+					],
+					"variable": [
+						{
+							"key": "appAccessId",
+							"value": "{{appAccessId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Accesses - Invalid Param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{appAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/app-accesses/:appAccessId/share-link/app",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app-accesses",
+						":appAccessId",
+						"share-link",
+						"app"
+					],
+					"variable": [
+						{
+							"key": "appAccessId",
+							"value": "invalid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Valid Token & Data - JWT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"}); ",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"sessionId\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"buildId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"appId\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"        \"deviceId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"userId\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"sessionId\", \"buildId\", \"appId\", \"deviceId\", \"userId\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": {{buildId}},\n  \"appId\": {{appId}},\n  \"deviceId\": {{deviceId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Valid Token & Data - AppAccess",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201.\", function () {",
+							"    pm.response.to.have.status(201);",
+							"}); ",
+							"",
+							"const schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"id\": {",
+							"            \"type\": \"integer\"",
+							"        },",
+							"        \"sessionId\": {",
+							"            \"type\": \"string\"",
+							"        }, ",
+							"        \"buildId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"appId\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"        \"deviceId\": {",
+							"            \"type\": \"integer\"",
+							"        },  ",
+							"        \"userId\": {",
+							"            \"type\": \"integer\"",
+							"        }, ",
+							"    },",
+							"    \"required\": [\"id\", \"sessionId\", \"buildId\", \"appId\", \"deviceId\", \"userId\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches expected schema.\", function() {",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{appAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": {{buildId}},\n  \"appId\": {{appId}},\n  \"deviceId\": {{deviceId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Invalid Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401.\", function () {",
+							"    pm.response.to.have.status(401);",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": {{buildId}},\n  \"appId\": {{appId}},\n  \"deviceId\": {{deviceId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Invalid Data (buildId)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": \"{{$randomWord}}\",\n  \"appId\": {{appId}},\n  \"deviceId\": {{deviceId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Invalid Data (appId)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": {{buildId}},\n  \"appId\": \"{{$randomWord}}\",\n  \"deviceId\": {{deviceId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sessions - Invalid Data (deviceId)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400.\", function () {",
+							"    pm.response.to.have.status(400);",
+							"}); ",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{idToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"buildId\": {{buildId}},\n  \"appId\": {{appId}},\n  \"deviceId\": \"{{$randomWord}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://api.appshare.dev"
+		},
+		{
+			"key": "userEmail",
+			"value": ""
+		},
+		{
+			"key": "userPassword",
+			"value": ""
+		},
+		{
+			"key": "idToken",
+			"value": ""
+		},
+		{
+			"key": "apiKey",
+			"value": ""
+		},
+		{
+			"key": "code",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "appId",
+			"value": ""
+		},
+		{
+			"key": "buildId",
+			"value": ""
+		},
+		{
+			"key": "shareLinkPassword",
+			"value": ""
+		},
+		{
+			"key": "appAccessToken",
+			"value": ""
+		},
+		{
+			"key": "appAccessId",
+			"value": ""
+		},
+		{
+			"key": "deviceId",
+			"value": ""
+		},
+		{
+			"key": "shareLinkToken",
+			"value": ""
+		}
+	]
+}
